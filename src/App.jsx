@@ -1,26 +1,26 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { UserProvider } from './context/UserContext';
-import Dashboard from './pages/Dashboard';
 import { ProductProvider } from './context/ProductContext';
 import { LoginUserProvider } from './context/LoginUserContext';
-
+import Dashboard from './pages/Dashboard';
 
 function App() {
-  
   return (
     <ThemeProvider>
       <LoginUserProvider>
         <UserProvider>
-        <ProductProvider>
-          <div className="min-h-screen">
-          <Dashboard />
-        </div>
-        </ProductProvider>
-      </UserProvider>
+          <ProductProvider>
+            <Router>
+              <Routes>
+                <Route path="/*" element={<Dashboard />} />
+              </Routes>
+            </Router>
+          </ProductProvider>
+        </UserProvider>
       </LoginUserProvider>
     </ThemeProvider>
-    
   );
 }
 

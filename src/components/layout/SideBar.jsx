@@ -1,150 +1,78 @@
-import React, { useState } from 'react';
-import { FiPackage } from "react-icons/fi";
-import { MdOutlineLaptopChromebook } from "react-icons/md";
+import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { FiPackage, FiLogOut, FiLayers } from "react-icons/fi";
+import { MdOutlineLaptopChromebook, MdOutlineSegment } from "react-icons/md";
 import { LuUsers } from "react-icons/lu";
-import { MdOutlineSegment } from "react-icons/md";
-import { FiLayers } from "react-icons/fi";
-import { FiLogOut } from "react-icons/fi";
 import { useTheme } from '../../hooks/useTheme';
 
 const SideBar = ({ isMobile = false, onItemClick }) => {
-  const [activeItem, setActiveItem] = useState('Dashboard');
-const { isDark } = useTheme();
-  const handleItemClick = (itemName) => {
-    setActiveItem(itemName);
-    // Call parent function to close mobile sidebar if needed
-    if (onItemClick) {
-      onItemClick(itemName);
-    }
-  };
+  const { isDark } = useTheme();
+  const navigate = useNavigate();
 
   const menuItems = [
-    {
-      name: 'Dashboard',
-      icon: MdOutlineLaptopChromebook,
-      count: null,
-      active: true
-    },
-    {
-      name: 'Users',
-      icon: LuUsers,
-      count: 116
-    },
-    {
-      name: 'Products',
-      icon: FiPackage,
-      count: 100
-    },
-    {
-      name: 'Assignments',
-      icon: MdOutlineSegment,
-      count: 10
-    },
-    {
-      name: 'Categories',
-      icon: FiLayers,
-      count: null
-    }
+    { name: 'Dashboard', icon: MdOutlineLaptopChromebook, to: '/' },
+    { name: 'Users', icon: LuUsers, to: '/users', count: 116 },
+    { name: 'Products', icon: FiPackage, to: '/products', count: 100 },
+    { name: 'Assignments', icon: MdOutlineSegment, to: '/assignments', count: 10 },
+    { name: 'Categories', icon: FiLayers, to: '/categories' },
   ];
+
+  const handleLogout = () => {
+    // Add your logout logic here (e.g., clearing localStorage, auth tokens, etc.)
+    navigate('/login');
+  };
 
   return (
     <div className={`h-full w-full ${isDark ? 'bg-primarycolor-800 border-gray-700' : 'bg-white border-gray-200'} shadow-md flex flex-col`}>
-      {/* Logo Section */}
-      <div className="flex items-center gap-3 p-4 ">
-        <div className="bg-primarycolor-600 text-white rounded-lg h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center flex-shrink-0">
-          <FiPackage className="text-xl sm:text-2xl" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <h1 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>iHUZA</h1>
-          <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>INVENTORY</p>
-        </div>
-      </div>
-
-      {/* Navigation Menu */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <div className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = activeItem === item.name;
           return (
-            <button
+            <NavLink
               key={item.name}
-              onClick={() => handleItemClick(item.name)}
-              className={`
-                w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left
-                transition-all duration-200 group
+              to={item.to}
+              className={({ isActive }) =>
+                `w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-200 group
                 ${isActive
                   ? isDark
                     ? 'bg-primarycolor-800 text-primarycolor-100 shadow-sm'
                     : 'bg-primarycolor-50 text-primarycolor-500 shadow-sm'
                   : isDark
                     ? 'text-gray-300 hover:bg-primarycolor-600 hover:text-white'
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                    : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'}`
+              }
+              onClick={() => {
+                if (isMobile && onItemClick) {
+                  onItemClick();
                 }
-              `}
+              }}
             >
-              <Icon
-                size={20}
-                className={`flex-shrink-0 ${
-                  isActive
-                    ? isDark
-                      ? 'text-primarycolor-200'
-                      : 'text-primarycolor-600'
-                    : isDark
-                      ? 'text-gray-500 group-hover:text-white'
-                      : 'text-gray-500 group-hover:text-gray-700'
-                }`}
-              />
+              <Icon size={20} />
               <span className={`font-medium text-sm sm:text-base min-w-0 flex-1 truncate ${isDark ? 'text-gray-100' : ''}`}>
                 {item.name}
               </span>
               {item.count && (
-                <span className={`
-                  text-xs px-2 py-1 rounded-full font-medium flex-shrink-0
-                  ${isActive
-                    ? isDark
-                      ? 'bg-primarycolor-900 text-primarycolor-100'
-                      : 'bg-primarycolor-100 text-primarycolor-700'
-                    : isDark
-                      ? 'bg-gray-800 text-gray-400'
-                      : 'bg-gray-200 text-gray-600'
-                  }
-                `}>
+                <span className={`text-xs px-2 py-1 rounded-full font-medium flex-shrink-0 ${
+                  isDark ? 'bg-primarycolor-900 text-primarycolor-100' : 'bg-primarycolor-100 text-primarycolor-700'
+                }`}>
                   {item.count}
                 </span>
               )}
-            </button>
+            </NavLink>
           );
         })}
-      </nav>
-
-      {/* Footer Section */}
-      <div className={`border-t ${isDark ? 'border-gray-700' : 'border-gray-200'} p-3`}>
-        <button 
-          onClick={() => handleItemClick('logout')}
-          className="
-            w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
-            text-gray-500 hover:bg-red-50 hover:text-red-600
-            transition-all duration-200 group
-          "
-        >
-          <FiLogOut
-            size={20}
-            className="flex-shrink-0 text-gray-500 group-hover:text-red-500" 
-          />
-          <span className="font-medium text-sm sm:text-base">
-            Logout
-          </span>
-        </button>
       </div>
 
-      {/* Mobile indicator (optional) */}
-      {isMobile && (
-        <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
-          <p className="text-xs text-gray-500 text-center">
-            Tap outside to close
-          </p>
-        </div>
-      )}
+      {/* Logout */}
+      <div className="p-4 border-t border-gray-300">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 text-red-500 hover:text-red-700 text-sm"
+        >
+          <FiLogOut size={18} />
+          Logout
+        </button>
+      </div>
     </div>
   );
 };
